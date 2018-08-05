@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 
 namespace Dex
 {
@@ -55,10 +54,11 @@ namespace Dex
 
             if (File.Exists(Define.SaveFileName))
             {
+                var load = new TableMgr();
                 var sr = new StreamReader(Define.SaveFileName);
-                var dat = sr.ReadToEnd();
+                load.Load(sr);
                 sr.Close();
-                var load = JsonConvert.DeserializeObject<Save>(dat);
+                
                 load.Tables.ForEach(t =>
                 {
                     var formTable = new FormTable(t);
@@ -70,7 +70,7 @@ namespace Dex
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var save = new Save();
+            var save = new TableMgr();
             TableList.ForEach(t =>
             {
                 var table = new Table()
@@ -95,9 +95,9 @@ namespace Dex
                 }
                 save.Tables.Add(table);
             });
-            string json = JsonConvert.SerializeObject(save, Formatting.Indented);
+
             var sw = new StreamWriter(Define.SaveFileName);
-            sw.Write(json);
+            save.Save(sw);
             sw.Close();
 
             MessageBox.Show("저장되었습니다.");
