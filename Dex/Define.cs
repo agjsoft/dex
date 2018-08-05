@@ -2,6 +2,7 @@
 {
     public static class Define
     {
-        public static string SaveFileName = "dex.json";
+        public static string SaveFileName = "dexconfig.txt";
+        public static string ExportFolderName = "./export";
     }
 }

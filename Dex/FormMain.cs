@@ -27,7 +27,7 @@ namespace Dex
             TableNameList = array.ToList();
         }
 
-        private void newTableToolStripMenuItem_Click(object sender, EventArgs e)
+        private void miNewTable_Click(object sender, EventArgs e)
         {
             int idx = Rn.Next() % TableNameList.Count;
             var table = new FormTable(TableNameList[idx]);
@@ -68,7 +68,7 @@ namespace Dex
             }
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void miSave_Click(object sender, EventArgs e)
         {
             var save = new TableMgr();
             TableList.ForEach(t =>
@@ -103,9 +103,36 @@ namespace Dex
             MessageBox.Show("저장되었습니다.");
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void miExit_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void miExport_Click(object sender, EventArgs e)
+        {
+            Directory.CreateDirectory(Define.ExportFolderName);
+
+            TableList.ForEach(t =>
+            {
+                var lv = t.GetListView();
+                int cCount = lv.Columns.Count;
+
+                var sw = new StreamWriter(Path.Combine(Define.ExportFolderName, t.Text + ".txt"));
+                foreach (ColumnHeader ch in lv.Columns)
+                {
+                    sw.Write(ch.Text + "^");
+                }
+                sw.WriteLine();
+                foreach (ListViewItem item in lv.Items)
+                {
+                    for (int i = 0; i < cCount; i++)
+                    {
+                        sw.Write(item.SubItems[i].Text + "^");
+                    }
+                    sw.WriteLine();
+                }
+                sw.Close();
+            });
         }
     }
 }
