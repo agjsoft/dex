@@ -59,6 +59,26 @@ namespace Dex
                         break;
                     case ColumnType.DataPointer:
                         break;
+                    case ColumnType.Time:
+                        {
+                            DateTime tmp;
+                            if (false == DateTime.TryParse(text, out tmp))
+                            {
+                                success = false;
+                                break;
+                            }
+                        }
+                        break;
+                    case ColumnType.Weekday:
+                        {
+                            DayOfWeek tmp;
+                            if (false == Enum.TryParse(text, out tmp))
+                            {
+                                success = false;
+                                break;
+                            }
+                        }
+                        break;
                 }
             }
 

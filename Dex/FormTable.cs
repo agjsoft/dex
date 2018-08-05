@@ -12,8 +12,8 @@ namespace Dex
             insert5RowToolStripMenuItem_Click(null, null);
 
             CreateColumn("Id", ColumnType.Id);
-            CreateColumn("숫자", ColumnType.Number);
-            CreateColumn("문자열", ColumnType.String);
+            CreateColumn("Value", ColumnType.Number);
+            CreateColumn("String", ColumnType.String);
         }
 
         public FormTable(Table table)
@@ -87,12 +87,25 @@ namespace Dex
                     break;
                 }
             }
-            
-            var form = new FormValue((ColumnAttribute)listView1.Columns[colIdx].Tag, hit.SubItem.Text);
-            if (form.ShowDialog() != DialogResult.OK)
-                return;
 
-            hit.SubItem.Text = form.result;
+            var ca = (ColumnAttribute)listView1.Columns[colIdx].Tag;
+            switch (ca.Type)
+            {
+                case ColumnType.Time:
+                    {
+                        var form = new FormTimeValue();
+                        if (form.ShowDialog() == DialogResult.OK)
+                            hit.SubItem.Text = form.result.ToString();
+                    }
+                    break;
+                default:
+                    {
+                        var form = new FormValue(ca, hit.SubItem.Text);
+                        if (form.ShowDialog() == DialogResult.OK)
+                            hit.SubItem.Text = form.result;
+                    }
+                    break;
+            }
         }
 
         private void listView1_MouseClick(object sender, MouseEventArgs e)

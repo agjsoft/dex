@@ -66,6 +66,12 @@
     <Compile Include="FormTable.Designer.cs">
       <DependentUpon>FormTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormTimeValue.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTimeValue.Designer.cs">
+      <DependentUpon>FormTimeValue.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormValue.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -84,6 +90,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormTable.resx">
       <DependentUpon>FormTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormTimeValue.resx">
+      <DependentUpon>FormTimeValue.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormValue.resx">
       <DependentUpon>FormValue.cs</DependentUpon>

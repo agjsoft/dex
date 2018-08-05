@@ -8,6 +8,7 @@ namespace Dex
     public class ColumnAttribute
     {
         public ColumnType Type;
+        public string Desc;
         public CheckInteger MinInteger = new CheckInteger();
         public CheckInteger MaxInteger = new CheckInteger();
         public CheckInteger MinLength = new CheckInteger();
@@ -17,6 +18,7 @@ namespace Dex
         public void Save(StreamWriter sw)
         {
             sw.WriteLine(Type);
+            sw.WriteLine(Desc);
             MinInteger.Save(sw);
             MaxInteger.Save(sw);
             MinLength.Save(sw);
@@ -29,7 +31,8 @@ namespace Dex
 
         public void Load(StreamReader sr)
         {
-            Type = (ColumnType)Enum.Parse(typeof(ColumnType), sr.ReadLine());
+            Enum.TryParse(sr.ReadLine(), out Type);
+            Desc = sr.ReadLine();
             MinInteger.Load(sr);
             MaxInteger.Load(sr);
             MinLength.Load(sr);

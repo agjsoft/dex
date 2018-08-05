@@ -112,6 +112,135 @@ namespace Dex
         {
             Directory.CreateDirectory(Define.ExportFolderName);
 
+            var csSw = new StreamWriter(Path.Combine(Define.ExportFolderName, "DataTable.cs"));
+            csSw.WriteLine($"using System;");
+            csSw.WriteLine($"using System.Collections.Generic;");
+            csSw.WriteLine($"using System.IO;");
+            csSw.WriteLine($"using System.Threading.Tasks;");
+            csSw.WriteLine($"");
+            csSw.WriteLine($"namespace DataTable");
+            csSw.WriteLine($"{{");
+            csSw.WriteLine($"    public static class Manager");
+            csSw.WriteLine($"    {{");
+            csSw.WriteLine($"        public static void Init()");
+            csSw.WriteLine($"        {{");
+            csSw.WriteLine($"            var taskList = new List<Task>();");
+
+            TableList.ForEach(t =>
+            {
+                csSw.WriteLine($"            taskList.Add(Task.Run(() => {t.Text}DataTable.Load()));");
+            });
+
+            csSw.WriteLine($"            Task.WaitAll(taskList.ToArray());");
+
+            TableList.ForEach(t =>
+            {
+                csSw.WriteLine($"            {t.Text}DataTable.Post();");
+            });
+
+            csSw.WriteLine($"        }}");
+            csSw.WriteLine($"    }}");
+            csSw.WriteLine($"");
+
+            TableList.ForEach(t =>
+            {
+                csSw.WriteLine($"    public class {t.Text}DataTableRow");
+                csSw.WriteLine($"    {{");
+
+                var lv = t.GetListView();
+                foreach (ColumnHeader ch in lv.Columns)
+                {
+                    string typeStr = "";
+                    var ca = (ColumnAttribute)ch.Tag;
+                    switch (ca.Type)
+                    {
+                        case ColumnType.Id:
+                            typeStr = "int";
+                            break;
+                        case ColumnType.Number:
+                            typeStr = "long";
+                            break;
+                        case ColumnType.String:
+                            typeStr = "string";
+                            break;
+                        case ColumnType.DataPointer:
+                            typeStr = $"{ca.LinkTable.Text}DataTableRow";
+                            break;
+                        case ColumnType.Time:
+                            typeStr = "DateTime";
+                            break;
+                        case ColumnType.Weekday:
+                            typeStr = "DayOfWeek";
+                            break;
+                    }
+                    csSw.WriteLine($"        public {typeStr} {ch.Text};");
+                }
+
+                csSw.WriteLine($"    }}");
+                csSw.WriteLine($"");
+            });
+
+            TableList.ForEach(t =>
+            {
+                csSw.WriteLine($"    public static class {t.Text}DataTable");
+                csSw.WriteLine($"    {{");
+                csSw.WriteLine($"        public static Dictionary<int, {t.Text}DataTableRow> Map = new Dictionary<int, {t.Text}DataTableRow>();");
+                csSw.WriteLine($"");
+                csSw.WriteLine($"        public static void Load()");
+                csSw.WriteLine($"        {{");
+                csSw.WriteLine($"            var sr = new StreamReader(\"{t.Text}.txt\");");
+                csSw.WriteLine($"            sr.ReadLine();");
+                csSw.WriteLine($"            while (!sr.EndOfStream)");
+                csSw.WriteLine($"            {{");
+                csSw.WriteLine($"                var spl = sr.ReadLine().Split('^');");
+                csSw.WriteLine($"                var row = new {t.Text}DataTableRow()");
+                csSw.WriteLine($"                {{");
+
+                int idx = 0;
+                var lv = t.GetListView();
+                foreach (ColumnHeader ch in lv.Columns)
+                {
+                    string rValue = "";
+                    var ca = (ColumnAttribute)ch.Tag;
+                    switch (ca.Type)
+                    {
+                        case ColumnType.Id:
+                            rValue = $"int.Parse(spl[{idx}])";
+                            break;
+                        case ColumnType.Number:
+                            rValue = $"long.Parse(spl[{idx}])";
+                            break;
+                        case ColumnType.String:
+                            rValue = $"spl[{idx}]";
+                            break;
+                        case ColumnType.DataPointer:
+                            break;
+                        case ColumnType.Time:
+                            rValue = $"DateTime.Parse(spl[{idx}])";
+                            break;
+                        case ColumnType.Weekday:
+                            rValue = $"(DayOfWeek)Enum.Parse(typeof(DayOfWeek), spl[{idx}])";
+                            break;
+                    }
+                    csSw.WriteLine($"                    {ch.Text} = {rValue},");
+                    idx++;
+                }
+
+                csSw.WriteLine($"                }};");
+                csSw.WriteLine($"                Map.Add(row.Id, row);");
+                csSw.WriteLine($"            }}");
+                csSw.WriteLine($"            sr.Close();");
+                csSw.WriteLine($"        }}");
+                csSw.WriteLine($"");
+                csSw.WriteLine($"        public static void Post()");
+                csSw.WriteLine($"        {{");
+                csSw.WriteLine($"        }}");
+                csSw.WriteLine($"    }}");
+            });
+
+            csSw.WriteLine($"}}");
+            csSw.Close();
+
             TableList.ForEach(t =>
             {
                 var lv = t.GetListView();
@@ -133,6 +262,10 @@ namespace Dex
                 }
                 sw.Close();
             });
+
+            csSw.Close();
+
+            MessageBox.Show("익스포팅 성공");
         }
     }
 }

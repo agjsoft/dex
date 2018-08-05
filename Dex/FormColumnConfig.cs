@@ -13,15 +13,23 @@ namespace Dex
             switch (Value.Type)
             {
                 case ColumnType.Number:
-                    radioButton1.Checked = true;
+                    rbNumber.Checked = true;
                     break;
                 case ColumnType.String:
-                    radioButton2.Checked = true;
+                    rbString.Checked = true;
                     break;
                 case ColumnType.DataPointer:
-                    radioButton3.Checked = true;
+                    rbDataPointer.Checked = true;
+                    break;
+                case ColumnType.Time:
+                    rbTime.Checked = true;
+                    break;
+                case ColumnType.Weekday:
+                    rbWeekday.Checked = true;
                     break;
             }
+
+            tbDesc.Text = Value.Desc;
 
             cbMinInteger.Checked = Value.MinInteger.Enable;
             tbMinInteger.Text = Value.MinInteger.Value.ToString();
@@ -49,37 +57,22 @@ namespace Dex
                 cmbLinkTable.SelectedIndex = selIndex;
         }
 
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-            groupBox1.Enabled = true;
-            groupBox2.Enabled = false;
-            groupBox3.Enabled = false;
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-            groupBox1.Enabled = false;
-            groupBox2.Enabled = true;
-            groupBox3.Enabled = false;
-        }
-
-        private void radioButton3_CheckedChanged(object sender, EventArgs e)
-        {
-            groupBox1.Enabled = false;
-            groupBox2.Enabled = false;
-            groupBox3.Enabled = true;
-        }
-
         public ColumnAttribute Value;
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (radioButton1.Checked)
+            if (rbNumber.Checked)
                 Value.Type = ColumnType.Number;
-            else if (radioButton2.Checked)
+            else if (rbString.Checked)
                 Value.Type = ColumnType.String;
-            else
+            else if (rbDataPointer.Checked)
                 Value.Type = ColumnType.DataPointer;
+            else if (rbTime.Checked)
+                Value.Type = ColumnType.Time;
+            else
+                Value.Type = ColumnType.Weekday;
+
+            Value.Desc = tbDesc.Text;
 
             Value.MinInteger.Enable = cbMinInteger.Checked;
             Value.MinInteger.Value = long.Parse(tbMinInteger.Text);
@@ -102,6 +95,41 @@ namespace Dex
             }
 
             Close();
+        }
+
+        private void rbNumber_CheckedChanged(object sender, EventArgs e)
+        {
+            gbNumber.Enabled = true;
+            gbString.Enabled = false;
+            gbDataPointer.Enabled = false;
+        }
+
+        private void rbString_CheckedChanged(object sender, EventArgs e)
+        {
+            gbNumber.Enabled = false;
+            gbString.Enabled = true;
+            gbDataPointer.Enabled = false;
+        }
+
+        private void rbDataPointer_CheckedChanged(object sender, EventArgs e)
+        {
+            gbNumber.Enabled = false;
+            gbString.Enabled = false;
+            gbDataPointer.Enabled = true;
+        }
+
+        private void rbTime_CheckedChanged(object sender, EventArgs e)
+        {
+            gbNumber.Enabled = false;
+            gbString.Enabled = false;
+            gbDataPointer.Enabled = false;
+        }
+
+        private void rbWeekday_CheckedChanged(object sender, EventArgs e)
+        {
+            gbNumber.Enabled = false;
+            gbString.Enabled = false;
+            gbDataPointer.Enabled = false;
         }
     }
 }

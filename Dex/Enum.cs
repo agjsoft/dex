@@ -5,6 +5,8 @@
         Id,
         Number,
         String,
-        DataPointer
+        DataPointer,
+        Time,
+        Weekday,
     }
 }
