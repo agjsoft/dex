@@ -45,14 +45,14 @@ namespace Dex
 
         public void Save(StreamWriter sw)
         {
-            sw.WriteLine(Enable);
-            sw.WriteLine(Value);
+            sw.WriteLine(Enable + "^" + Value);
         }
 
         public void Load(StreamReader sr)
         {
-            Enable = bool.Parse(sr.ReadLine());
-            Value = long.Parse(sr.ReadLine());
+            var spl = sr.ReadLine().Split('^');
+            Enable = bool.Parse(spl[0]);
+            Value = long.Parse(spl[1]);
         }
     }
 
@@ -88,23 +88,17 @@ namespace Dex
         {
             sw.WriteLine(Name);
             sw.WriteLine(ColumnNames.Count);
-            ColumnNames.ForEach(n => sw.WriteLine(n));
+            Util.SaveStringsInOneRow(sw, ColumnNames);
             Columns.ForEach(n => n.Save(sw));
             sw.WriteLine(Values.Count);
-            Values.ForEach(v =>
-            {
-                for (int i = 0; i < ColumnNames.Count; i++)
-                    sw.Write(v[i] + "^");
-                sw.WriteLine();
-            });
+            Values.ForEach(v => Util.SaveStringsInOneRow(sw, v));
         }
 
         public void Load(StreamReader sr)
         {
             Name = sr.ReadLine();
             int cCount = int.Parse(sr.ReadLine());
-            for (int i = 0; i < cCount; i++)
-                ColumnNames.Add(sr.ReadLine());
+            ColumnNames = Util.LoadStringsInOneRow(sr);
             for (int i = 0; i < cCount; i++)
             {
                 Columns.Add(new ColumnAttribute());
@@ -113,11 +107,7 @@ namespace Dex
             int dCount = int.Parse(sr.ReadLine());
             for (int i = 0; i < dCount; i++)
             {
-                var datas = new List<string>();
-                var spl = sr.ReadLine().Split('^');
-                for (int k = 0; k < spl.Length - 1; k++)
-                    datas.Add(spl[k]);
-                Values.Add(datas);
+                Values.Add(Util.LoadStringsInOneRow(sr));
             }
         }
     }
