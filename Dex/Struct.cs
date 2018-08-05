@@ -91,7 +91,12 @@ namespace Dex
             ColumnNames.ForEach(n => sw.WriteLine(n));
             Columns.ForEach(n => n.Save(sw));
             sw.WriteLine(Values.Count);
-            Values.ForEach(v => v.ForEach(v2 => sw.WriteLine(v2)));
+            Values.ForEach(v =>
+            {
+                for (int i = 0; i < ColumnNames.Count; i++)
+                    sw.Write(v[i] + "^");
+                sw.WriteLine();
+            });
         }
 
         public void Load(StreamReader sr)
@@ -109,10 +114,9 @@ namespace Dex
             for (int i = 0; i < dCount; i++)
             {
                 var datas = new List<string>();
-                for (int k = 0; k < cCount; k++)
-                {
-                    datas.Add(sr.ReadLine());
-                }
+                var spl = sr.ReadLine().Split('^');
+                for (int k = 0; k < spl.Length - 1; k++)
+                    datas.Add(spl[k]);
                 Values.Add(datas);
             }
         }
